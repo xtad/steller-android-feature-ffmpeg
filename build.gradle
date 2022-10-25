@@ -64,7 +64,7 @@ dependencies {
 
     implementation Dependencies.kotlinStandardLibrary
     implementation Dependencies.ktx
-    implementation Dependencies.kotlinCoroutinesCore
+    implementation Dependencies.Coroutines.core
 
     implementation Dependencies.AndroidX.Activity.core
     implementation Dependencies.AndroidX.Activity.ktx
