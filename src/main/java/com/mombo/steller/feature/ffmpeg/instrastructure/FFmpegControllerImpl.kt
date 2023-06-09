@@ -1,9 +1,9 @@
 package com.mombo.steller.feature.ffmpeg.instrastructure
 
 import android.text.TextUtils
-import com.arthenica.mobileffmpeg.Config
-import com.arthenica.mobileffmpeg.FFmpeg
-import com.arthenica.mobileffmpeg.FFprobe
+import com.arthenica.ffmpegkit.FFmpegKit
+import com.arthenica.ffmpegkit.FFprobeKit
+import com.arthenica.ffmpegkit.ReturnCode
 import com.mombo.steller.feature.ffmpeg.domain.FFmpegController
 import org.json.JSONException
 import timber.log.Timber
@@ -12,15 +12,15 @@ import kotlin.coroutines.suspendCoroutine
 internal class FFmpegControllerImpl : FFmpegController {
 
     override fun execute(ffmpegCommand: String): Boolean {
-        val resultCode = FFmpeg.execute(ffmpegCommand)
+        val resultSession = FFmpegKit.execute(ffmpegCommand)
 
-        return if (resultCode != Config.RETURN_CODE_SUCCESS) {
-            val lastCommandOutput = Config.getLastCommandOutput()
-
-            // Log last command output for error state - we need to track what's going on on these devices
+        return if (resultSession.returnCode.isValueError) {
+            val lastCommandOutput = resultSession.command
 
             // Log last command output for error state - we need to track what's going on on these devices
-            Timber.e("Last command error code - %s", resultCode)
+
+            // Log last command output for error state - we need to track what's going on on these devices
+            Timber.e("Last command error code - %s", resultSession.returnCode.value)
             if (!TextUtils.isEmpty(lastCommandOutput)) {
                 Timber.e(lastCommandOutput)
             }
@@ -32,21 +32,21 @@ internal class FFmpegControllerImpl : FFmpegController {
     }
 
     override suspend fun executeAsync(ffmpegCommand: String): Boolean {
-        val resultCode = suspendCoroutine<Int> {
-            FFmpeg.executeAsync(
+        val resultCode = suspendCoroutine<ReturnCode> {
+            FFmpegKit.executeAsync(
                 ffmpegCommand
-            ) { executionId, returnCode ->
-                it.resumeWith(Result.success(returnCode))
+            ) { session ->
+                it.resumeWith(Result.success(session.returnCode))
             }
         }
 
-        return resultCode == Config.RETURN_CODE_SUCCESS
+        return resultCode.isValueSuccess
     }
 
     override fun getMetadataLocationUsingFFProbe(mediaPath: String): String? {
-        val mediaInformation = FFprobe.getMediaInformation(mediaPath) ?: return null
+        val mediaSession = FFprobeKit.getMediaInformation(mediaPath) ?: return null
 
-        val tags = mediaInformation.tags ?: return null
+        val tags = mediaSession.mediaInformation.tags ?: return null
 
         if (tags.has(METADATA_KEY_LOCATION)) {
             try {
