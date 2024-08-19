@@ -24,7 +24,6 @@ android {
 
     defaultConfig {
         minSdkVersion ApplicationConfig.minSdk
-        targetSdkVersion ApplicationConfig.targetSdk
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -59,19 +58,17 @@ android {
 
 dependencies {
 
-    implementation Dependencies.kotlinStandardLibrary
-    implementation Dependencies.ktx
+    implementation Dependencies.KotlinExtension.ktx
     implementation Dependencies.Coroutines.core
 
     implementation Dependencies.AndroidX.Activity.core
     implementation Dependencies.AndroidX.Activity.ktx
-    implementation Dependencies.AndroidX.Activity.compose
 
     implementation Dependencies.Koin.core
 
     implementation Dependencies.Timber.core
 
-    implementation Dependencies.ffmpeg
+    implementation Dependencies.Ffmpeg.ffmpeg
 
 }
 
