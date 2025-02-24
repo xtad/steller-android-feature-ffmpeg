@@ -4,6 +4,9 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        flatDir {
+            dirs 'libs'
+        }
     }
 
     dependencies {
@@ -68,8 +71,7 @@ dependencies {
 
     implementation Dependencies.Timber.core
 
-    implementation Dependencies.Ffmpeg.ffmpeg
-
+    implementation(files("libs/ffmpeg-kit-6.0-5.aar"))
 }
 
 injectConfig {
