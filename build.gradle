@@ -4,8 +4,9 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        flatDir {
-            dirs 'libs'
+        maven {
+            name = "reposiliteRepository"
+            url = uri("https://reposilite.dashboards.steller.co/releases/")
         }
     }
 
@@ -71,7 +72,7 @@ dependencies {
 
     implementation Dependencies.Timber.core
 
-    implementation(files("libs/ffmpeg-kit-6.0-5.aar"))
+    implementation("com.arthenica:ffmpegkit:6.0-5@aar")
 }
 
 injectConfig {
