@@ -71,7 +71,7 @@ dependencies {
     implementation Dependencies.Koin.core
 
     implementation Dependencies.Timber.core
-    implementation("com.arthenica:ffmpeg-kit-https-gpl-no-gnutls:6.0-5@aar")
+    implementation("com.arthenica:ffmpeg-kit-https-gpl-openssl:6.0-5@aar")
     // We need to add this library explicitly, because R8 keeps removing it
     implementation("com.arthenica:smart-exception-java:0.2.1")
 }
