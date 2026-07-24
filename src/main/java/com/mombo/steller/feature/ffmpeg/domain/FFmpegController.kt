@@ -3,9 +3,13 @@ package com.mombo.steller.feature.ffmpeg.domain
 
 interface FFmpegController {
 
-    fun execute(ffmpegCommand: String): Boolean
+    suspend fun execute(ffmpegCommand: String): Boolean
+
+    suspend fun executeWithArguments(arguments: Array<String>): Boolean
 
     suspend fun executeAsync(ffmpegCommand: String): Boolean
+
+    suspend fun executeWithArgumentsAsync(arguments: Array<String>): Boolean
 
     fun getMetadataLocationUsingFFProbe(mediaPath: String): String?
 

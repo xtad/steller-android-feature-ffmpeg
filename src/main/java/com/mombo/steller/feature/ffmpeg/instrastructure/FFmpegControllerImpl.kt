@@ -11,36 +11,44 @@ import kotlin.coroutines.suspendCoroutine
 
 internal class FFmpegControllerImpl : FFmpegController {
 
-    override fun execute(ffmpegCommand: String): Boolean {
+    private val mutex = Mutex()
+
+    override suspend fun execute(ffmpegCommand: String): Boolean = mutex.withLock {
         val resultSession = FFmpegKit.execute(ffmpegCommand)
+        handleResult(resultSession.returnCode, resultSession.command)
+    }
 
-        return if (resultSession.returnCode.isValueError) {
-            val lastCommandOutput = resultSession.command
+    override suspend fun executeWithArguments(arguments: Array<String>): Boolean = mutex.withLock {
+        val resultSession = FFmpegKit.executeWithArguments(arguments)
+        handleResult(resultSession.returnCode, resultSession.command)
+    }
 
-            // Log last command output for error state - we need to track what's going on on these devices
-
-            // Log last command output for error state - we need to track what's going on on these devices
-            Timber.e("Last command error code - %s", resultSession.returnCode.value)
-            if (!TextUtils.isEmpty(lastCommandOutput)) {
-                Timber.e(lastCommandOutput)
+    override suspend fun executeAsync(ffmpegCommand: String): Boolean = mutex.withLock {
+        suspendCoroutine {
+            FFmpegKit.executeAsync(ffmpegCommand) { session ->
+                it.resumeWith(Result.success(handleResult(session.returnCode, session.command)))
             }
-
-            false
-        }else{
-            true
         }
     }
 
-    override suspend fun executeAsync(ffmpegCommand: String): Boolean {
-        val resultCode = suspendCoroutine<ReturnCode> {
-            FFmpegKit.executeAsync(
-                ffmpegCommand
-            ) { session ->
-                it.resumeWith(Result.success(session.returnCode))
+    override suspend fun executeWithArgumentsAsync(arguments: Array<String>): Boolean = mutex.withLock {
+        suspendCoroutine {
+            FFmpegKit.executeWithArgumentsAsync(arguments) { session ->
+                it.resumeWith(Result.success(handleResult(session.returnCode, session.command)))
             }
         }
+    }
 
-        return resultCode.isValueSuccess
+    private fun handleResult(returnCode: ReturnCode, command: String?): Boolean {
+        return if (returnCode.isValueError) {
+            Timber.e("Last FFMPEG command error code - %s", returnCode.value)
+            if (!TextUtils.isEmpty(command)) {
+                Timber.e(command)
+            }
+            false
+        } else {
+            true
+        }
     }
 
     override fun getMetadataLocationUsingFFProbe(mediaPath: String): String? {
