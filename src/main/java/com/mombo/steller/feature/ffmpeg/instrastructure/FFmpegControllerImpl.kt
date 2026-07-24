@@ -5,6 +5,8 @@ import com.arthenica.ffmpegkit.FFmpegKit
 import com.arthenica.ffmpegkit.FFprobeKit
 import com.arthenica.ffmpegkit.ReturnCode
 import com.mombo.steller.feature.ffmpeg.domain.FFmpegController
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.json.JSONException
 import timber.log.Timber
 import kotlin.coroutines.suspendCoroutine
