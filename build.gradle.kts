@@ -1,5 +1,3 @@
-import com.mombo.Dependencies
-
 buildscript {
     repositories {
         google()
@@ -17,7 +15,6 @@ buildscript {
 
 plugins {
     id("com.android.library")
-    id("org.jetbrains.kotlin.android")
     id("app.artyomd.injector")
 }
 
@@ -62,16 +59,14 @@ android {
 }
 
 dependencies {
-    implementation(Dependencies.Coroutines.core)
-
-    implementation(Dependencies.Koin.core)
-
-    implementation(Dependencies.Timber.core)
+    implementation(libs.coroutinesCore)
+    implementation(libs.koinCore)
+    implementation(libs.timber)
+    // FFMPEG compiled and wrapped for Android
     implementation("com.arthenica:ffmpeg-kit-https-gpl-openssl:6.0-5@aar")
     // We need to add this library explicitly, because R8 keeps removing it
     implementation("com.arthenica:smart-exception-java:0.2.1")
 }
 
 injectConfig {
-    enabled = true
 }
